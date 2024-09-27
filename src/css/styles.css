@@ -145,6 +145,18 @@ button:focus {
   text-align: center;
 }
 
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
+
+.loading-spinner img {
+  width: 50px; /* Adjust as needed */
+  height: 50px; /* Adjust as needed */
+}
+
 .data-container {
   margin-top: 20px;
 }
@@ -161,6 +173,7 @@ button:focus {
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
   box-shadow: var(--container-shadow);
   color: var(--contrast-text);
+  cursor: text;
 }
 
 .search-input::placeholder {
@@ -245,8 +258,6 @@ thead th {
 }
 
 
-/*Configuracion de animacion de despliegue del business controller*/
-
 /* Ajustes para la tabla y los contenedores */
 
 .details-container {
@@ -303,7 +314,103 @@ thead th {
   box-shadow: var(--button-animationShadow);
 }
 
+/* DataGraphics specific styles */
+.data-graphics-container {
+  width: 100%;
+  margin: 1.25rem 0;
+}
+.search-container {
+  margin: 0;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.date-input-container {
+  display: flex;
+  align-items: center;
+  margin: 0.5rem;
+  justify-content: center;
+}
+.data-graphics-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 0.5rem;
+  margin: 1.25rem 0 0 0;
+  padding: 1rem;
+  font-size: 1.1rem;
+  background-color: var(--table-headBg);
+  border-radius: 1rem;
+}
 
+.data-graphics-table th {
+  background-color: var(--table-headBg);
+  font-weight: bold;
+  padding: 1rem 0.3rem;
+  border: none;
+}
+
+.data-graphics-row td {
+  background-color: var(--container-mainBackground);
+  color: var(--contrast-text);
+  padding: 1.5rem;
+}
+
+.data-graphics-clickable-cell {
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.data-graphics-clickable-cell:hover {
+  background-color: var(--cell-animationBg);
+}
+
+.data-graphics-details-container {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.data-graphics-details-container.show {
+  max-height: none;
+  opacity: 1;
+  overflow: visible;
+}
+
+.data-graphics-details-row td {
+  padding: 0;
+}
+
+.data-graphics-transaction-details h3 {
+  margin-bottom: 1rem;
+}
+
+.data-graphics-inner-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.data-graphics-inner-table th{
+  border: 1px solid var(--table-border);
+  padding: 0.8rem;
+  text-align: center;
+}
+.data-graphics-inner-table td {
+  border-bottom: 1px solid var(--form-input);
+  padding: 1rem;
+  text-align: left;
+}
+
+.data-graphics-inner-table th {
+  font-weight: bold;
+}
+
+/* Ensure the inner table has a bottom border */
+.data-graphics-inner-table tr:last-child td {
+  border-bottom: 1px solid var(--table-border);
+}
 
 
 pre {
@@ -338,13 +445,13 @@ h3 {
 .button-graphicsContainer{
   display: flex;
   justify-content: center;
-  padding: 3rem 0 1rem 0;
+  padding: 1rem 0;
 }
 
 .button-container {
   display: flex;
   justify-content: center;
-  padding: 3rem 0;
+  padding: 2rem 0;
 }
 
 .home-panelButton{
@@ -377,6 +484,8 @@ h3 {
   background-position: 0% 50%;
 
 }
+
+
 
 .anual-button{
 
@@ -418,7 +527,12 @@ h3 {
 
 }
 
-
+.content-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 30%; /* Adjust as needed */
+}
 
 .modal-overlay {
   position: fixed;

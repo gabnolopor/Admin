@@ -23,3 +23,27 @@
     width: 25px;
     height: 25px;
   }
+
+.points-operation-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.operation-button {
+  padding: 10px 20px;
+  margin: 0 5px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.operation-button.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.operation-button.active:hover {
+  background-color: #0056b3;
+}

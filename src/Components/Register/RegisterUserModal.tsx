@@ -69,7 +69,7 @@ const RegisterUserModal: React.FC<RegisterUserModalProps> = ({ isOpen, onClose, 
 
   const [selectedCase, setSelectedCase] = useState<OptionType[]>([]);
   const animatedComponents = makeAnimated();
-
+  const [passwordError, setPasswordError] = useState('');
 
   const handleCaseUseChange = (selectedOption: any) => {
     setSelectedCase(selectedOption);
@@ -82,6 +82,14 @@ const RegisterUserModal: React.FC<RegisterUserModalProps> = ({ isOpen, onClose, 
       ...form,
       [name]: value
     });
+
+    if (name === 'contrasena') {
+      if (value.length < 5) {
+        setPasswordError('La contraseña debe tener al menos 5 caracteres');
+      } else {
+        setPasswordError('');
+      }
+    }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -156,6 +164,7 @@ const RegisterUserModal: React.FC<RegisterUserModalProps> = ({ isOpen, onClose, 
               onChange={handleChange}
               required
             />
+            {passwordError && <p style={{ color: 'red', marginTop: '5px' }}>{passwordError}</p>}
           </label>
           <label>
             Nombre del negocio:
@@ -180,7 +189,7 @@ const RegisterUserModal: React.FC<RegisterUserModalProps> = ({ isOpen, onClose, 
               styles={customStyles}
             />
           </label>
-          <button type="submit">Registrar</button>
+          <button type="submit" disabled={passwordError !== ''}>Registrar</button>
           <button type="button" onClick={onClose}>Cancelar</button>
         </form>
       </div>

@@ -4,12 +4,14 @@ interface UserListProps {
   data: Record<string, any>;
   handleUserAndBusinessDelete: (username: string, businessName: string) => void;
   handleUserSelect: (username: string) => void;
-  handleOpenEditUserModal: () => void;
+  handleOpenEditUserModal: (user: any) => void;
   handleBusinessSelect: (businessId: string) => void;
   handleOpenEditBusinessModal: () => void;
   handleRegisterUser: () => void;
   fetchBusinessInfo: (businessId: string) => void;
   currentDatabase: string;
+  isTableVisible: boolean;
+  onTableVisibilityChange: (isVisible: boolean) => void;
 }
 
 
@@ -47,104 +49,50 @@ const translationMap: { [key: string]: string } = {
   password: "Contraseña",
   phoneNumber: "Número de teléfono",
   businessId: "ID del negocio",
+  schema_version: "Versión del esquema",
+  payment_type: "Tipo de pago",
+  skills: "Habilidades",
+  active_skills: "Habilidades activas",
+  whitelist: "Lista blanca",
+  stripe_customer_id: "ID de cliente de Stripe",
+  status: "Estado"
 };
 // Función para renderizar el valor correctamente
+
 const renderValue = (value: any, key?: string) => {
-  if (key === "use_case") {
-    return (
-      <ul style={{ listStyle: "disc", padding: 0 }}>
-        {value.map((item: any, index: number) => (
-          <li key={index}>{item.label}</li>
-        ))}
-      </ul>
-    );
-  } else if (key === "categories") {
-    return (
-      <ul style={{ listStyle: "disc", padding: 0 }}>
-        {value.map((category: any, index: number) => (
-          <li key={index}>
-            <strong>{translationMap["category_name"]}:</strong>{" "}
-            {category.category_name}
-            <ul style={{ listStyle: "circle", padding: "0 0 0 1.25rem" }}>
-              {category.options.map((option: any, optionIndex: number) => (
-                <li key={optionIndex}>
-                  <strong>{translationMap["option_name"]}:</strong>{" "}
-                  {option.option_name}
-                  <ul style={{ listStyle: "none", padding: "0 0 0 1.25rem" }}>
-                    <li>
-                      <strong>{translationMap["icon"]}:</strong> {option.icon}
-                    </li>
-                    <li>
-                      <strong>{translationMap["description"]}:</strong>{" "}
-                      {option.description}
-                    </li>
-                    <li>
-                      <strong>{translationMap["_id"]}:</strong> {option._id}
-                    </li>
-                  </ul>
-                </li>
-              ))}
-            </ul>
-          </li>
-        ))}
-      </ul>
-    );
-  } else if (key === "channels") {
-    return (
-      <ul style={{ listStyle: "disc", padding: 0 }}>
-        {value.map((channel: any, index: number) => (
-          <li key={index}>
-            <strong>{translationMap["channel_name"]}:</strong>{" "}
-            {channel.channel_name}
-            <ul style={{ listStyle: "circle", padding: "0 0 0 1.25rem" }}>
-              <li>
-                <strong>{translationMap["active"]}:</strong>{" "}
-                {String(channel.active)}
-              </li>
-              <li>
-                <strong>{translationMap["username"]}:</strong>{" "}
-                {channel.username}
-              </li>
-              <li>
-                <strong>{translationMap["main_number"]}:</strong>{" "}
-                {String(channel.main_number)}
-              </li>
-              <li>
-                <strong>{translationMap["baileys_port"]}:</strong>{" "}
-                {channel.baileys_port}
-              </li>
-              <li>
-                <strong>{translationMap["baileys_status"]}:</strong>{" "}
-                {String(channel.baileys_status)}
-              </li>
-            </ul>
-          </li>
-        ))}
-      </ul>
-    );
-  } else if (Array.isArray(value)) {
-    return (
-      <ul style={{ listStyle: "none", paddingLeft: 0 }}>
-        {value.map((item, index) => (
-          <li key={index}>{renderValue(item)}</li>
-        ))}
-      </ul>
-    );
-  } else if (typeof value === "object" && value !== null) {
-    return (
-      <ul style={{ listStyle: "disc", padding: 0 }}>
-        {Object.entries(value).map(([key, val]) => (
-          <li key={key}>
-            <strong>{translationMap[key] || key}:</strong>{" "}
-            {renderValue(val, key)}
-          </li>
-        ))}
-      </ul>
-    );
-  } else {
-    return <span>{value.toString()}</span>;
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return ""; // Return empty string for empty arrays
+    }
+    if (key === "use_case") {
+      return value.map(item => item.label).join(", ");
+    } else if (key === "categories") {
+      return value.map(category => category.category_name).join(", ");
+    } else if (key === "assistants") {
+      return value.map(assistant => assistant.name).join(", ");
+    } else if (key === "channels") {
+      return value.map(channel => channel.channel_name).join(", ");
+    } else if (key === "skills" || key === "active_skills") {
+      return value.join(", ");
+    }
+    return JSON.stringify(value);
+  } else if (typeof value === "boolean") {
+    return value ? "Activo" : "Inactivo";
+  } else if (key === "payment_type") {
+    return value === "Premium" ? "Premium" : "Estándar";
+  } else if (key === "intelligenceLevel") {
+    const levels = { "1": "Bajo", "2": "Medio", "3": "Alto", "media": "Medio" };
+    return levels[value as keyof typeof levels] || value;
+  } else if (key === "responseLength") {
+    const lengths = { "short": "Corto", "medium": "Medio", "long": "Largo", "cortas": "Corto" };
+    return lengths[value as keyof typeof lengths] || value;
+  } else if (key === "responseSpeed") {
+    const speeds = { "slow": "Lento", "normal": "Normal", "fast": "Rápido", "media": "Normal" };
+    return speeds[value as keyof typeof speeds] || value;
   }
+  return value;
 };
+
 const UserList: React.FC<UserListProps> = ({
   data,
   handleUserAndBusinessDelete,
@@ -155,8 +103,9 @@ const UserList: React.FC<UserListProps> = ({
   handleRegisterUser,
   fetchBusinessInfo,
   currentDatabase,
+  isTableVisible,
+  onTableVisibilityChange,
 }) => {
-  const [isUsersVisible, setIsUsersVisible] = useState(false);
   const [openBusinessId, setOpenBusinessId] = useState<string | null>(null);
   const [openUserId, setOpenUserId] = useState<string | null>(null);
   const [openAssistantId, setOpenAssistantId] = useState<string | null>(null);
@@ -167,22 +116,12 @@ const UserList: React.FC<UserListProps> = ({
   const [assistantEditData, setAssistantEditData] = useState<any>({});
   const [isFormValid, setIsFormValid] = useState(false);
 
+
   useEffect(() => {
     if (data && Object.keys(data).length > 0) {
       setLoading(false);
     }
   }, [data]);
-
-  const toggleUsersVisibility = () => {
-    // Si la tabla se está ocultando, reseteamos los IDs de apertura
-    if (isUsersVisible) {
-      setOpenBusinessId(null);
-      setOpenAssistantId(null);
-      setOpenUserId(null);
-    }
-    // Luego alternamos la visibilidad
-    setIsUsersVisible(!isUsersVisible);
-  };
 
   const handleBusinessClick = (businessId: string) => {
     if (openBusinessId === businessId) {
@@ -217,23 +156,43 @@ const UserList: React.FC<UserListProps> = ({
       const assistantId = assistantEditData.assistant_id;
 
       try {
-        console.log(
-          openBusinessId,
-          assistantId,
-          assistantEditData,
-          currentDatabase
-        ); // Debería mostrar el assistant_id
+        console.log("Current assistantEditData:", assistantEditData);
 
+        // Get the current business data
+        const business = data[openBusinessId].businessInfo;
+        const isBeingActivated = assistantEditData.active === true || assistantEditData.active === "true";
+
+        let updatedAssistants = business.assistants.map((assistant: any) => {
+          if (assistant.assistant_id === assistantId) {
+            // This is the assistant being edited
+            return {
+              ...assistant,
+              ...assistantEditData,
+              active: isBeingActivated
+            };
+          } else {
+            // For all other assistants, set active to false only if the current assistant is being activated
+            return {
+              ...assistant,
+              active: isBeingActivated ? false : assistant.active
+            };
+          }
+        });
+
+        console.log("Updated assistants:", updatedAssistants);
+
+        // Update all assistants for the business
         await updateAssistant(
           openBusinessId,
           assistantId,
-          assistantEditData,
+          updatedAssistants,
           currentDatabase
         );
 
-        // Actualizar la información del negocio después de guardar
-        fetchBusinessInfo(openBusinessId);
-        setIsModalOpen(false); // Cerrar el modal después de guardar
+        // Fetch updated business info to refresh the local state
+        await fetchBusinessInfo(openBusinessId);
+
+        setIsModalOpen(false); // Close the modal after saving
       } catch (error) {
         console.error("Error al actualizar el asistente:", error);
       }
@@ -302,14 +261,21 @@ const UserList: React.FC<UserListProps> = ({
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-  const handleAssistantInputChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = event.target;
-    setAssistantEditData({
-      ...assistantEditData,
-      [name]: value,
-    });
+  const handleAssistantInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    
+    if (name === 'active') {
+      const newValue = value === 'true';
+      setAssistantEditData((prevData: any) => ({
+        ...prevData,
+        [name]: newValue
+      }));
+    } else {
+      setAssistantEditData((prevData: any) => ({
+        ...prevData,
+        [name]: value
+      }));
+    }
   };
 
   useEffect(() => {
@@ -334,23 +300,32 @@ const UserList: React.FC<UserListProps> = ({
     return requiredFields.every((field) => field !== undefined && field !== "");
   };
 
+  const toggleTableVisibility = () => {
+    onTableVisibilityChange(!isTableVisible);
+  };
+ 
+
+  const handleEditUser = (user: any) => {
+    handleOpenEditUserModal(user);
+  };
+
   return (
     <div>
       <div className="button-container">
         <button
           className="home-panelButton"
-          onClick={toggleUsersVisibility}
+          onClick={toggleTableVisibility}
           disabled={loading}
         >
           {loading
             ? "Cargando"
-            : isUsersVisible
+            : isTableVisible
             ? "Ocultar Negocios"
             : "Mostrar Negocios"}
         </button>
       </div>
       <div>
-        {isUsersVisible && (
+        {isTableVisible && (
           <>
             {/* Campo de búsqueda */}
             <div
@@ -430,20 +405,41 @@ const UserList: React.FC<UserListProps> = ({
                                             {Object.entries(
                                               businessData.businessInfo
                                             ).map(([key, value]) => {
-                                              if (key === "assistants")
-                                                return null;
+                                              if (key === "assistants" || key === "__v") return null;
                                               const translatedKey =
                                                 translationMap[key] || key;
+                                              
+                                              if (key === "skills" && Array.isArray(value)) {
+                                                return (
+                                                  <li key={`business-${businessId}-${key}`}>
+                                                    <span>
+                                                      <strong>{translatedKey}:</strong>
+                                                      <ul className="inner-list">
+                                                        {value.map((skill: any) => (
+                                                          <li key={`business-${businessId}-skill-${skill.skill_id}`}>
+                                                            <strong>{skill.skill_name}</strong>
+                                                            <ul>
+                                                              <li>Tipo: {skill.skill_type}</li>
+                                                              <li>Descripción: {skill.skill_description}</li>
+                                                            </ul>
+                                                          </li>
+                                                        ))}
+                                                      </ul>
+                                                    </span>
+                                                  </li>
+                                                );
+                                              }
+                                              
                                               return (
-                                                <li key={key}>
+                                                <li key={`business-${businessId}-${key}`}>
                                                   <span>
                                                     <strong>
                                                       {translatedKey}:
                                                     </strong>
                                                     <ul className="inner-list">
-                                                      <li>
+                                                      <li key={`business-${businessId}-${key}-value`}>
                                                         {renderValue(
-                                                          value,
+                                                          value as any,
                                                           key
                                                         )}
                                                       </li>
@@ -465,21 +461,20 @@ const UserList: React.FC<UserListProps> = ({
                                                 (assistant: any) => {
                                                   const isOpenAssistant =
                                                     openAssistantId ===
-                                                    assistant._id;
+                                                    assistant.assistant_id;
                                                   const circleColor =
                                                     assistant.active
                                                       ? "green"
                                                       : "red";
                                                   return (
-                                                    <React.Fragment
-                                                      key={assistant._id}
-                                                    >
+                                                    <React.Fragment key={`assistant-${assistant.assistant_id}`}>
+
                                                       <div className="assistant-controller">
                                                         <li
                                                           className="clickable-text"
                                                           onClick={() =>
                                                             handleAssistantClick(
-                                                              assistant._id
+                                                              assistant.assistant_id
                                                             )
                                                           }
                                                         >
@@ -520,39 +515,27 @@ const UserList: React.FC<UserListProps> = ({
                                                           }}
                                                         >
                                                           <ul className="inner-list">
-                                                            {Object.entries(
-                                                              assistant
-                                                            ).map(
-                                                              ([
-                                                                key,
-                                                                value,
-                                                              ]) => {
-                                                                if (
-                                                                  key === "_id"
-                                                                )
-                                                                  return null;
-                                                                const translatedKey =
-                                                                  translationMap[
-                                                                    key
-                                                                  ] || key;
-                                                                return (
-                                                                  <li key={key}>
-                                                                    <span>
-                                                                      <strong>
-                                                                        {
-                                                                          translatedKey
-                                                                        }
-                                                                        :
-                                                                      </strong>{" "}
-                                                                      {renderValue(
-                                                                        value,
-                                                                        key
-                                                                      )}
-                                                                    </span>
-                                                                  </li>
-                                                                );
+                                                            {Object.entries(assistant).map(([key, value]) => {
+                                                              // Skip rendering for specific keys
+                                                              if (
+                                                                key === '__v' || 
+                                                                key === 'baileys_port' || 
+                                                                key === 'assistant_id' ||
+                                                                key === 'assistant_knowledge_base' ||
+                                                                key === 'whitelist' ||
+                                                                (key === 'assistant_knowledge_base' && value === 'undefined') ||
+                                                                (Array.isArray(value) && value.length === 0)
+                                                              ) {
+                                                                return null;
                                                               }
-                                                            )}
+                                                              
+                                                              const translatedKey = translationMap[key] || key;
+                                                              return (
+                                                                <li key={`assistant-${assistant.assistant_id}-${key}`}>
+                                                                  <strong>{translatedKey}:</strong> {renderValue(value, key)}
+                                                                </li>
+                                                              );
+                                                            })}
                                                           </ul>
                                                         </li>
                                                       )}
@@ -584,9 +567,8 @@ const UserList: React.FC<UserListProps> = ({
                                                     openUserId ===
                                                     user.username;
                                                   return (
-                                                    <React.Fragment
-                                                      key={user.username}
-                                                    >
+                                                    <React.Fragment key={`user-${user.username}`}>
+
                                                       <div className="user-controller">
                                                         <li
                                                           className="clickable-text"
@@ -600,12 +582,7 @@ const UserList: React.FC<UserListProps> = ({
                                                         </li>
                                                         <li>
                                                           <button
-                                                            onClick={() => {
-                                                              handleUserSelect(
-                                                                user.username
-                                                              );
-                                                              handleOpenEditUserModal();
-                                                            }}
+                                                            onClick={() => handleEditUser(user)}
                                                           >
                                                             Editar Usuario
                                                           </button>
@@ -639,12 +616,13 @@ const UserList: React.FC<UserListProps> = ({
                                                                 key,
                                                                 value,
                                                               ]) => {
+                                                                if (key === "__v" || key === "baileys_port") return null;
                                                                 const translatedKey =
                                                                   translationMap[
                                                                     key
                                                                   ] || key;
                                                                 return (
-                                                                  <li key={key}>
+                                                                  <li key={`user-${user.username}-${key}`}>
                                                                     <span>
                                                                       <strong>
                                                                         {
@@ -717,113 +695,76 @@ const UserList: React.FC<UserListProps> = ({
           <div className="modal-content">
             <h3>Editar Asistente</h3>
             <form>
-              <label>
-                Nombre:
-                <input
-                  type="text"
-                  name="name"
-                  value={assistantEditData.name || ""}
-                  onChange={handleAssistantInputChange}
-                />
-              </label>
-              <label>
-                Descripción:
-                <input
-                  type="text"
-                  name="description"
-                  value={assistantEditData.description || ""}
-                  onChange={handleAssistantInputChange}
-                />
-              </label>
-              <label>
-                Instrucciones:
-                <input
-                  type="text"
-                  name="instructions"
-                  value={assistantEditData.instructions || ""}
-                  onChange={handleAssistantInputChange}
-                />
-              </label>
-              <label>
-                Nivel de Inteligencia:
-                <select
-                  name="intelligenceLevel"
-                  value={assistantEditData.intelligenceLevel || ""}
-                  onChange={handleAssistantInputChange}
-                >
-                  <option value="alta">Alta</option>
-                  <option value="media">Media</option>
-                  <option value="baja">Baja</option>
-                </select>
-              </label>
-
-              <label>
-                Longitud de Respuesta:
-                <select
-                  name="responseLength"
-                  value={assistantEditData.responseLength || ""}
-                  onChange={handleAssistantInputChange}
-                >
-                  <option value="cortas">Cortas</option>
-                  <option value="medias">Medias</option>
-                  <option value="largas">Largas</option>
-                </select>
-              </label>
-              <label>
-                Velocidad de respuesta:
-                <select
-                  name="responseSpeed"
-                  value={assistantEditData.responseSpeed || ""}
-                  onChange={handleAssistantInputChange}
-                >
-                  <option value="lenta">Lenta</option>
-                  <option value="media">Media</option>
-                  <option value="rapida">Rápida</option>
-                </select>
-              </label>
-
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <label>
-                  Inicio Horario Laboral:
-                  <input
-                    type="number"
-                    name="workingHoursStart"
-                    value={assistantEditData.workingHoursStart || "0"}
-                    onChange={handleAssistantInputChange}
-                    min="1"
-                    max="24"
-                    style={{ width: "80px" }}
-                  />
-                </label>
-
-                <label>
-                  Fin Horario Laboral:
-                  <input
-                    type="number"
-                    name="workingHoursEnd"
-                    value={assistantEditData.workingHoursEnd || ""}
-                    onChange={handleAssistantInputChange}
-                    min="1"
-                    max="24"
-                    style={{ width: "80px" }}
-                  />
-                </label>
-              </div>
-
-              <label>
-                Estado:
-                <select
-                  name="active"
-                  value={assistantEditData.active || ""}
-                  onChange={handleAssistantInputChange}
-                >
-                  <option value="true">Activo</option>
-                  <option value="false">Inactivo</option>
-                </select>
-              </label>
+              {Object.entries(assistantEditData).map(([key, value]) => {
+                // Skip rendering for specific keys
+                if (
+                  key === '__v' || 
+                  key === 'baileys_port' || 
+                  key === 'assistant_id' ||
+                  key === 'assistant_knowledge_base' ||
+                  key === 'whitelist' ||
+                  key === '_id' ||  // Add this line to skip the ID
+                  (key === 'assistant_knowledge_base' && value === 'undefined') ||
+                  (Array.isArray(value) && value.length === 0)
+                ) {
+                  return null;
+                }
+                
+                const translatedKey = translationMap[key] || key;
+                return (
+                  <label key={key}>
+                    {translatedKey}:
+                    {key === 'active' ? (
+                      <select
+                        name={key}
+                        value={value?.toString() || ""}
+                        onChange={handleAssistantInputChange}
+                      >
+                        <option value="true">Activo</option>
+                        <option value="false">Inactivo</option>
+                      </select>
+                    ) : key === 'intelligenceLevel' || key === 'responseLength' || key === 'responseSpeed' ? (
+                      <select
+                        name={key}
+                        value={value?.toString() || ""}
+                        onChange={handleAssistantInputChange}
+                      >
+                        {key === 'intelligenceLevel' && (
+                          <>
+                            <option value="baja">Bajo</option>
+                            <option value="media">Medio</option>
+                            <option value="corta">Alto</option>
+                          </>
+                        )}
+                        {key === 'responseLength' && (
+                          <>
+                            <option value="cortas">Corto</option>
+                            <option value="medias">Medio</option>
+                            <option value="largas">Largo</option>
+                          </>
+                        )}
+                        {key === 'responseSpeed' && (
+                          <>
+                            <option value="lenta">Lento</option>
+                            <option value="media">Normal</option>
+                            <option value="rapida">Rápido</option>
+                          </>
+                        )}
+                      </select>
+                    ) : (
+                      <input
+                        type={key.includes('Hours') ? "number" : "text"}
+                        name={key}
+                        value={value?.toString() || ""}
+                        onChange={handleAssistantInputChange}
+                        min={key.includes('Hours') ? "0" : undefined}
+                        max={key.includes('Hours') ? "24" : undefined}
+                      />
+                    )}
+                  </label>
+                );
+              })}
             </form>
-
-            {/* El botón de guardar se deshabilita si el formulario no es válido */}
             <button onClick={handleAssistantUpdate} disabled={!isFormValid}>
               Guardar
             </button>
@@ -831,7 +772,10 @@ const UserList: React.FC<UserListProps> = ({
           </div>
         </div>
       )}
+
+
     </div>
   );
 };
 export default UserList;
+
