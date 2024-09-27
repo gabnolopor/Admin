@@ -1,0 +1,49 @@
+.custom-button {
+    position: relative;
+    background-color: white;
+    color: black;
+    border: 2px solid black;
+    border-radius: 50px;
+    font-weight: bold;
+    min-width: 55px;
+    min-height: 25px;
+    transition: background-color 0.3s ease;
+  }
+  .custom-button:hover {
+    background-color: #e0e0e0; /* Un gris claro, puedes cambiarlo al color que prefieras */
+    color: black; /* Asegura que el texto siga siendo visible */
+  }
+
+  .custom-button.selected {
+    background-color: rgba(89, 169, 234, 0.695);
+    color: white;
+  }
+  
+  .loading-gif {
+    width: 25px;
+    height: 25px;
+  }
+
+.points-operation-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.operation-button {
+  padding: 10px 20px;
+  margin: 0 5px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.operation-button.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.operation-button.active:hover {
+  background-color: #0056b3;
+}
