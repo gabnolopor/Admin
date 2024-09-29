@@ -358,7 +358,6 @@ const UserList: React.FC<UserListProps> = ({
                   <thead>
                     <tr>
                       <th colSpan={2}>Nombre del Negocio</th>
-                      {/* Ocupa todo el ancho */}
                     </tr>
                   </thead>
 
@@ -389,7 +388,6 @@ const UserList: React.FC<UserListProps> = ({
                                   >
                                     Editar Negocio
                                   </td>
-                                  {/* Botón ocupa toda la fila */}
                                 </tr>
                                 {isOpenBusiness && (
                                   <tr className="details-row">
@@ -703,7 +701,7 @@ const UserList: React.FC<UserListProps> = ({
                   key === 'assistant_id' ||
                   key === 'assistant_knowledge_base' ||
                   key === 'whitelist' ||
-                  key === '_id' ||  // Add this line to skip the ID
+                  key === '_id' ||  
                   (key === 'assistant_knowledge_base' && value === 'undefined') ||
                   (Array.isArray(value) && value.length === 0)
                 ) {
