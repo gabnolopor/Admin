@@ -246,7 +246,7 @@ const Home: React.FC = () => {
         email: data.correo,
       };
 
-      console.log("New user data:", newUser); // Add this line for debugging
+      console.log("New user data:", newUser); 
 
       await createUser(newUser, currentDatabase);
 
@@ -371,7 +371,6 @@ const Home: React.FC = () => {
         await updateUser(selectedUser.username, userEditData, currentDatabase);
         fetchData(currentDatabase);
         setSelectedUser(null);
-        // Remove this line: setUserEditData({});
         setIsEditingUser(false);
         setBusinessInfo(null);
         setModalMessage("Se ha modificado el usuario");
@@ -392,7 +391,7 @@ const Home: React.FC = () => {
         );
         const updatedBusiness = await fetchBusinessInfo(
           businessInfo.business_id
-        ); // Asegúrate de obtener la información actualizada del negocio
+        ); 
         setBusinessInfo(updatedBusiness); // Actualiza la información del negocio en el estado
         setBusinessEditData({});
         setIsEditingBusiness(false);
@@ -644,7 +643,7 @@ const Home: React.FC = () => {
         username: user.username,
         phoneNumber: user.phoneNumber,
         email: user.email,
-        // Add any other fields you want to be editable
+        
       };
       console.log("Opening edit user modal with data:", editableData);
       setUserEditData(editableData);
@@ -865,7 +864,7 @@ const Home: React.FC = () => {
             <div className="modal-content">
               <h3>Editar Usuario</h3>
               {Object.keys(userEditData).map((key) => {
-                // Skip rendering for schema_version, password, __v, and any other fields you want to exclude
+                // Skip rendering for schema_version, password, __v
                 if (key === 'schema_version' || key === 'password' || key === '__v') {
                   return null;
                 }
