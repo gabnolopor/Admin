@@ -21,6 +21,7 @@ interface RegisterForm {
   contrasena: string;
   nombreNegocio: string;
   casoUsoNegocio: OptionType[];
+  paymentType: string;  // Add this line
 }
 
 
@@ -64,7 +65,8 @@ const RegisterUserModal: React.FC<RegisterUserModalProps> = ({ isOpen, onClose, 
     telefono: '',
     contrasena: '',
     nombreNegocio: '',
-    casoUsoNegocio: []
+    casoUsoNegocio: [],
+    paymentType: 'Standard'  
   });
 
   const [selectedCase, setSelectedCase] = useState<OptionType[]>([]);
@@ -112,7 +114,8 @@ const RegisterUserModal: React.FC<RegisterUserModalProps> = ({ isOpen, onClose, 
       telefono: '',
       contrasena: '',
       nombreNegocio: '',
-      casoUsoNegocio: []
+      casoUsoNegocio: [],
+      paymentType: 'Standard'
     });
   
     setSelectedCase([]);

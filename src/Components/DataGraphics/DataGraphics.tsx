@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import loadingGif from "../../img/loading.gif"; 
+import loadingGif from "../../img/loading.gif"; // Import the loading gif
 
 interface DataGraphicsProps {
   businessId: Record<string, any>;
@@ -27,7 +27,7 @@ const DataGraphics: React.FC<DataGraphicsProps> = ({
   const [visibleTransactions, setVisibleTransactions] = useState<Record<string, any[]>>({});
   const ITEMS_PER_PAGE = 20;
 
-  const [isLoading, setIsLoading] = useState(true); 
+  const [isLoading, setIsLoading] = useState(true); // Add this line
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter((transaction) => {
